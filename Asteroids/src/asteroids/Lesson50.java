@@ -33,7 +33,7 @@ public class Lesson50 extends JFrame {
 	public static void main(String[] args) {
 		new Lesson50();
 	}
-
+	//dsdsd
 
 	public Lesson50() {
 		// Define the defaults for the JFrame
