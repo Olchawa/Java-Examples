@@ -25,12 +25,17 @@ import java.util.concurrent.TimeUnit;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 
+import java.awt.geom.AffineTransform;
+
 public class GameBoard extends JFrame {
 
 	// Height and width of the game board
 
 	public static int boardWidth = 1000;
 	public static int boardHeight = 800;
+
+	public static boolean keyHeld = false;
+	public static int keyHeldCode;
 
 	public static void main(String[] args) {
 		new GameBoard();
@@ -45,18 +50,25 @@ public class GameBoard extends JFrame {
 		addKeyListener(new KeyListener() {
 
 			public void keyPressed(KeyEvent e) {
-
-			}
-
-			public void keyReleased(KeyEvent e) {
-
 				// w:87 a:65 s:83 d:68
-
 				if (e.getKeyCode() == 87) {
 					System.out.println("Forward");
 				} else if (e.getKeyCode() == 83) {
 					System.out.println("Backward");
+				} else if (e.getKeyCode() == 68) {
+					System.out.println("Rotate Right");
+					keyHeldCode = e.getKeyCode();
+					keyHeld = true;
+				} else if (e.getKeyCode() == 65) {
+					System.out.println("Rotate Left");
+					keyHeldCode = e.getKeyCode();
+					keyHeld = true;
 				}
+
+			}
+
+			public void keyReleased(KeyEvent e) {
+				keyHeld = false;
 
 			}
 
@@ -160,6 +172,7 @@ class GameDrawingPanel extends JComponent {
 		// Allows me to make many settings changes in regards to graphics
 
 		Graphics2D graphicSettings = (Graphics2D) g;
+		AffineTransform identity = new AffineTransform();
 
 		// Draw a black background that is as big as the game board
 
@@ -188,7 +201,35 @@ class GameDrawingPanel extends JComponent {
 
 		}
 
+		// Handles spinning the ship in the right direction when the key
+		// is pressed and held
+
+		if (GameBoard.keyHeld == true && GameBoard.keyHeldCode == 68) {
+
+			SpaceShip.rotationAngle += 10;
+
+		} else
+
+		if (GameBoard.keyHeld == true && GameBoard.keyHeldCode == 65) {
+
+			SpaceShip.rotationAngle -= 10;
+
+		}
+
 		TheShip.move();
+
+		// Sets the origin on the screen so rotation occurs properly
+
+		graphicSettings.setTransform(identity);
+
+		// Moves the ship to the center of the screen
+
+		graphicSettings.translate(GameBoard.boardWidth / 2, GameBoard.boardHeight / 2);
+
+		// Rotates the ship
+
+		graphicSettings.rotate(Math.toRadians(SpaceShip.rotationAngle));
+
 		graphicSettings.draw(TheShip);
 	}
 
