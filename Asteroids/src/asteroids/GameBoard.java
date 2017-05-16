@@ -14,6 +14,8 @@ import java.awt.RenderingHints;
 //Will hold all of my Rock objects
 import java.util.ArrayList;
 
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 //Runs commands after a given delay
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
@@ -23,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 
-public class Space extends JFrame {
+public class GameBoard extends JFrame {
 
 	// Height and width of the game board
 
@@ -31,16 +33,37 @@ public class Space extends JFrame {
 	public static int boardHeight = 800;
 
 	public static void main(String[] args) {
-		new Space();
+		new GameBoard();
 	}
-	//dsdsd
 
-	public Space() {
-		// Define the defaults for the JFrame
+	public GameBoard() {
 
 		this.setSize(boardWidth, boardHeight);
 		this.setTitle("Java Asteroids");
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+		addKeyListener(new KeyListener() {
+
+			public void keyPressed(KeyEvent e) {
+
+			}
+
+			public void keyReleased(KeyEvent e) {
+
+				// w:87 a:65 s:83 d:68
+
+				if (e.getKeyCode() == 87) {
+					System.out.println("Forward");
+				} else if (e.getKeyCode() == 83) {
+					System.out.println("Backward");
+				}
+
+			}
+
+			public void keyTyped(KeyEvent e) {
+
+			}
+		});
 
 		GameDrawingPanel gamePanel = new GameDrawingPanel();
 
@@ -71,9 +94,9 @@ public class Space extends JFrame {
 
 class RepaintTheBoard implements Runnable {
 
-	Space theBoard;
+	GameBoard theBoard;
 
-	public RepaintTheBoard(Space theBoard) {
+	public RepaintTheBoard(GameBoard theBoard) {
 		this.theBoard = theBoard;
 	}
 
@@ -103,22 +126,25 @@ class GameDrawingPanel extends JComponent {
 	int[] polyXArray = Rock.sPolyXArray;
 	int[] polyYArray = Rock.sPolyYArray;
 
+	// Create SpaceShip
+	SpaceShip TheShip = new SpaceShip();
+
 	// Gets the game board height and weight
 
-	int width = Space.boardWidth;
-	int height = Space.boardHeight;
+	int width = GameBoard.boardWidth;
+	int height = GameBoard.boardHeight;
 
 	// Creates 50 Rock objects and stores them in the ArrayList
 
 	public GameDrawingPanel() {
 
-		for (int i = 0; i < 50; i++) {
+		for (int i = 0; i < 20; i++) {
 
 			// Find a random x & y starting point
 			// The -40 part is on there to keep the Rock on the screen
 
-			int randomStartXPos = (int) (Math.random() * (Space.boardWidth - 40) + 1);
-			int randomStartYPos = (int) (Math.random() * (Space.boardHeight - 40) + 1);
+			int randomStartXPos = (int) (Math.random() * (GameBoard.boardWidth - 40) + 1);
+			int randomStartYPos = (int) (Math.random() * (GameBoard.boardHeight - 40) + 1);
 
 			// Add the Rock object to the ArrayList based on the attributes sent
 
@@ -162,6 +188,8 @@ class GameDrawingPanel extends JComponent {
 
 		}
 
+		TheShip.move();
+		graphicSettings.draw(TheShip);
 	}
 
 }
