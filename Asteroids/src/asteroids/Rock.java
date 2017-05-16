@@ -22,8 +22,8 @@ class Rock extends Polygon{
 	
 	// Get the board width and height
 	
-	int width = Lesson50.boardWidth;
-	int height = Lesson50.boardHeight;
+	int width = Space.boardWidth;
+	int height = Space.boardHeight;
 	
 	// Will hold the x & y coordinates for the Polygons
 	

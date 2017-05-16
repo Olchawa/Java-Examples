@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 
-public class Lesson50 extends JFrame {
+public class Space extends JFrame {
 
 	// Height and width of the game board
 
@@ -31,11 +31,11 @@ public class Lesson50 extends JFrame {
 	public static int boardHeight = 800;
 
 	public static void main(String[] args) {
-		new Lesson50();
+		new Space();
 	}
 	//dsdsd
 
-	public Lesson50() {
+	public Space() {
 		// Define the defaults for the JFrame
 
 		this.setSize(boardWidth, boardHeight);
@@ -71,9 +71,9 @@ public class Lesson50 extends JFrame {
 
 class RepaintTheBoard implements Runnable {
 
-	Lesson50 theBoard;
+	Space theBoard;
 
-	public RepaintTheBoard(Lesson50 theBoard) {
+	public RepaintTheBoard(Space theBoard) {
 		this.theBoard = theBoard;
 	}
 
@@ -105,8 +105,8 @@ class GameDrawingPanel extends JComponent {
 
 	// Gets the game board height and weight
 
-	int width = Lesson50.boardWidth;
-	int height = Lesson50.boardHeight;
+	int width = Space.boardWidth;
+	int height = Space.boardHeight;
 
 	// Creates 50 Rock objects and stores them in the ArrayList
 
@@ -117,8 +117,8 @@ class GameDrawingPanel extends JComponent {
 			// Find a random x & y starting point
 			// The -40 part is on there to keep the Rock on the screen
 
-			int randomStartXPos = (int) (Math.random() * (Lesson50.boardWidth - 40) + 1);
-			int randomStartYPos = (int) (Math.random() * (Lesson50.boardHeight - 40) + 1);
+			int randomStartXPos = (int) (Math.random() * (Space.boardWidth - 40) + 1);
+			int randomStartYPos = (int) (Math.random() * (Space.boardHeight - 40) + 1);
 
 			// Add the Rock object to the ArrayList based on the attributes sent
 
