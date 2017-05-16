@@ -158,6 +158,18 @@ public class SpaceShip extends Polygon{
 		
 	}
 	
+	//Get SpaceShip Nose Vectors
+	
+	public double getShipNoseX(){
+		return this.getXCenter()+ Math.cos(rotationAngle) * 14;
+
+	}
+	
+	public double getShipNoseY(){
+		return this.getYCenter()+ Math.sin(rotationAngle) * 14;
+
+	}
+		
 	public void move(){
 		
 		// Increase the x origin value based on current velocity 
