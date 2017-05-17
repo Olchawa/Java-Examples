@@ -27,6 +27,12 @@ import java.util.concurrent.TimeUnit;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 
+// immport sound libraries
+import javax.sound.sampled.*;
+import java.io.IOException;
+import java.net.*;
+import javax.swing.*;
+
 public class GameBoard extends JFrame {
 
 	// Height and width of the game board
@@ -38,6 +44,8 @@ public class GameBoard extends JFrame {
 
 	public static boolean keyHeld = false;
 
+	String thrustFile = "file:./src/thrust.au";
+	String laserFile = "file:./src/laser.aiff";
 	// Gets the keycode for the key being held down
 
 	public static int keyHeldCode;
@@ -69,16 +77,15 @@ public class GameBoard extends JFrame {
 			}
 
 			@Override
+			// forward
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyCode() == 87) {
-					System.out.println("Forward");
-
 					keyHeldCode = e.getKeyCode();
 					keyHeld = true;
-
-				} else if (e.getKeyCode() == 83) {
-					System.out.println("Backward");
-
+					// playSoundEffect(thrustFile);
+				}
+				// backward
+				else if (e.getKeyCode() == 83) {
 					keyHeldCode = e.getKeyCode();
 					keyHeld = true;
 
@@ -89,8 +96,6 @@ public class GameBoard extends JFrame {
 				// constantly rotate. keyHeldCode stores the keyCode for d
 
 				else if (e.getKeyCode() == 68) {
-					System.out.println("Rotate Right");
-
 					keyHeldCode = e.getKeyCode();
 					keyHeld = true;
 
@@ -100,8 +105,6 @@ public class GameBoard extends JFrame {
 				// 65 is the keyCode for a
 
 				else if (e.getKeyCode() == 65) {
-					System.out.println("Rotate Left");
-
 					keyHeldCode = e.getKeyCode();
 					keyHeld = true;
 				}
@@ -109,7 +112,8 @@ public class GameBoard extends JFrame {
 				// NEW Checks if Enter key is pressed ---------------
 
 				else if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-					System.out.println("Shoot");
+
+					playSoundEffect(laserFile);
 
 					// Creates a new torpedo and passes the ships nose position
 					// so the torpedo can start there. Also passes the ships
@@ -117,8 +121,6 @@ public class GameBoard extends JFrame {
 
 					torpedos.add(new PhotonTorpedo(GameDrawingPanel2.theShip.getShipNoseX(),
 							GameDrawingPanel2.theShip.getShipNoseY(), GameDrawingPanel2.theShip.getRotationAngle()));
-
-					System.out.println("RotationAngle " + GameDrawingPanel2.theShip.getRotationAngle());
 
 				}
 
@@ -154,6 +156,44 @@ public class GameBoard extends JFrame {
 		// Show the frame
 
 		this.setVisible(true);
+	}
+
+	// How to play sounds in a JFrame
+
+	public static void playSoundEffect(String soundToPlay) {
+
+		// Pointer towards the resource to play
+		URL soundLocation;
+
+		try {
+
+			soundLocation = new URL(soundToPlay);
+			// Stores a predefined audio clip
+			Clip clip = null;
+			// Convert audio data to different playable formats
+			clip = AudioSystem.getClip();
+			// Holds a stream of a definite length
+			AudioInputStream inputStream;
+			inputStream = AudioSystem.getAudioInputStream(soundLocation);
+			// Make audio clip available for play
+			clip.open(inputStream);
+			// Define how many times to loop
+			clip.loop(0);
+			// Play the clip
+			clip.start();
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (LineUnavailableException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (UnsupportedAudioFileException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 
 }
@@ -254,12 +294,13 @@ class GameDrawingPanel2 extends JComponent {
 		for (Rock rock : rocks) {
 
 			// Move the Rock polygon
+			if (rock.onScreen) {
+				rock.move(theShip,GameBoard.torpedos);
 
-			rock.move();
+				// Stroke the polygon Rock on the screen
 
-			// Stroke the polygon Rock on the screen
-
-			graphicSettings.draw(rock);
+				graphicSettings.draw(rock);
+			}
 
 		}
 
@@ -294,15 +335,14 @@ class GameDrawingPanel2 extends JComponent {
 
 		} else
 
-			if (GameBoard.keyHeld == true && GameBoard.keyHeldCode == 83) {
-		
-				theShip.setMovingAngle(theShip.getRotationAngle());
+		if (GameBoard.keyHeld == true && GameBoard.keyHeldCode == 83) {
 
-				theShip.decreaseXVelocity(theShip.shipXMoveAngle(theShip.getMovingAngle()) * 0.1);
-				theShip.decreaseYVelocity(theShip.shipYMoveAngle(theShip.getMovingAngle()) * 0.1);
+			theShip.setMovingAngle(theShip.getRotationAngle());
 
-			}
+			theShip.decreaseXVelocity(theShip.shipXMoveAngle(theShip.getMovingAngle()) * 0.1);
+			theShip.decreaseYVelocity(theShip.shipYMoveAngle(theShip.getMovingAngle()) * 0.1);
 
+		}
 
 		theShip.move();
 

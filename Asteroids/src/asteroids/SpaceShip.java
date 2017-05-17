@@ -154,7 +154,7 @@ public class SpaceShip extends Polygon{
 	
 	public Rectangle getBounds(){
 		
-		return new Rectangle(getShipWidth() - 14, getShipHeight() - 15, getShipWidth(), getShipHeight());
+		return new Rectangle((int)getXCenter() - 14, (int)getYCenter() - 14, getShipWidth(), getShipHeight());
 		
 	}
 	

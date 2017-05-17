@@ -103,7 +103,7 @@ public class PhotonTorpedo extends Polygon{
 	
 	public Rectangle getBounds(){
 			
-		return new Rectangle(getWidth() - 6, getHeight() - 6, getWidth(), getHeight());
+		return new Rectangle((int)getXCenter() - 6, (int)getYCenter() - 6, getWidth(), getHeight());
 			
 	}
 	
