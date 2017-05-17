@@ -5,16 +5,16 @@ import java.awt.BorderLayout;
 
 //Define color of shapes
 import java.awt.Color;
-
+import java.awt.Font;
 //Allows me to draw and render shapes on components
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
-
+import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.geom.AffineTransform;
-
+import java.util.Timer;
 //Will hold all of my Rock objects
 import java.util.ArrayList;
 
@@ -23,9 +23,6 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 //Defines time units. In this case TimeUnit.MILLISECONDS
 import java.util.concurrent.TimeUnit;
-
-import javax.swing.JComponent;
-import javax.swing.JFrame;
 
 import sounds.ResourceLoader;
 
@@ -38,10 +35,14 @@ import javax.swing.*;
 public class GameBoard extends JFrame {
 
 	// Height and width of the game board
+	
 
 	public static int boardWidth = 1000;
 	public static int boardHeight = 800;
 
+	public static Font font = new Font(null, Font.BOLD, 30);
+	public static int score = 0;
+	public static int lifes = 3;
 	// Used to check if a key is being held down
 
 	public static boolean keyHeld = false;
@@ -52,7 +53,7 @@ public class GameBoard extends JFrame {
 
 	public static int keyHeldCode;
 
-	//  Holds every PhotonTorpedo I create ---------------
+	// Holds every PhotonTorpedo I create ---------------
 
 	public static ArrayList<PhotonTorpedo> torpedos = new ArrayList<PhotonTorpedo>();
 
@@ -160,10 +161,6 @@ public class GameBoard extends JFrame {
 		this.setVisible(true);
 	}
 
-	// How to play sounds in a JFrame
-
-	
-
 }
 
 // Class implements the runnable interface
@@ -257,13 +254,27 @@ class GameDrawingPanel2 extends JComponent {
 
 		graphicSettings.setPaint(Color.WHITE);
 
+		// draw score
+		g.setFont(GameBoard.font);
+		g.drawString("SCORE:" + Integer.toString(GameBoard.score), 820, 40);
+		g.drawString("LIFES:" + Integer.toString(GameBoard.lifes), 20, 40);
+//		if (GameBoard.lifes <= 0) {
+//
+//			g.drawString("YOU LOST", 400, 390);
+//		
+//			
+//			
+//			System.exit(0);
+//		}
+//		
+		
 		// Cycle through all of the Rock objects
 
 		for (Rock rock : rocks) {
 
 			// Move the Rock polygon
 			if (rock.onScreen) {
-				rock.move(theShip,GameBoard.torpedos);
+				rock.move(theShip, GameBoard.torpedos);
 
 				// Stroke the polygon Rock on the screen
 
