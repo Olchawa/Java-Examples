@@ -24,13 +24,13 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 //Defines time units. In this case TimeUnit.MILLISECONDS
 import java.util.concurrent.TimeUnit;
 
-import sounds.ResourceLoader;
-
 // immport sound libraries
 import javax.sound.sampled.*;
 import java.io.IOException;
 import java.net.*;
 import javax.swing.*;
+
+import sounds.SoundLoader;
 
 public class GameBoard extends JFrame {
 
@@ -42,7 +42,7 @@ public class GameBoard extends JFrame {
 
 	public static Font font = new Font(null, Font.BOLD, 30);
 	public static int score = 0;
-	public static int lifes = 3;
+	public static int lifes = 0;
 	// Used to check if a key is being held down
 
 	public static boolean keyHeld = false;
@@ -116,7 +116,7 @@ public class GameBoard extends JFrame {
 
 				else if (e.getKeyCode() == KeyEvent.VK_ENTER) {
 
-					ResourceLoader.playSoundEffect(laserFile);
+					SoundLoader.playSoundEffect(laserFile);
 
 					// Creates a new torpedo and passes the ships nose position
 					// so the torpedo can start there. Also passes the ships
@@ -214,7 +214,7 @@ class GameDrawingPanel2 extends JComponent {
 
 	public GameDrawingPanel2() {
 
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < 15; i++) {
 
 			// Find a random x & y starting point
 			// The -40 part is on there to keep the Rock on the screen
@@ -257,7 +257,7 @@ class GameDrawingPanel2 extends JComponent {
 		// draw score
 		g.setFont(GameBoard.font);
 		g.drawString("SCORE:" + Integer.toString(GameBoard.score), 820, 40);
-		g.drawString("LIFES:" + Integer.toString(GameBoard.lifes), 20, 40);
+		g.drawString("DEATHS:" + Integer.toString(GameBoard.lifes), 20, 40);
 //		if (GameBoard.lifes <= 0) {
 //
 //			g.drawString("YOU LOST", 400, 390);

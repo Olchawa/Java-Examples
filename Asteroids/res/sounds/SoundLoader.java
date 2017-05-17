@@ -11,12 +11,9 @@ import javax.sound.sampled.Clip;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
-public class ResourceLoader {
+public class SoundLoader {
 	
-	public static ResourceLoader ResLoader = new ResourceLoader();
-	
-	
-	
+	public static SoundLoader ResLoader = new SoundLoader();
 	public static void playSoundEffect(String soundToPlay) {
 
 		// Pointer towards the resource to play
@@ -24,7 +21,7 @@ public class ResourceLoader {
 
 		try {
 
-			soundLocation = new URL("file:./res/sounds"+soundToPlay);
+			soundLocation = new URL("file:res/sounds"+soundToPlay);
 			// Stores a predefined audio clip
 			Clip clip = null;
 			// Convert audio data to different playable formats

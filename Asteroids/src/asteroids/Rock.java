@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 
-import sounds.ResourceLoader;
+import sounds.SoundLoader;
 
 // Extending the Polygon class because I'm drawing Polygons
 
@@ -145,8 +145,8 @@ class Rock extends Polygon {
 
 					
 						// play explosion if ship is hit
-						GameBoard.lifes -= 1;
-						ResourceLoader.playSoundEffect(explodeFile);
+						GameBoard.lifes += 1;
+						SoundLoader.playSoundEffect(explodeFile);
 						rock.onScreen = false;
 						theShip.setXCenter(theShip.gBWidth / 2);
 						theShip.setYCenter(theShip.gBHeight / 2);
@@ -176,7 +176,7 @@ class Rock extends Polygon {
 
 							// NEW play explosion sound if rock is destroyed
 
-							ResourceLoader.playSoundEffect(explodeFile);
+							SoundLoader.playSoundEffect(explodeFile);
 						}
 
 					}
