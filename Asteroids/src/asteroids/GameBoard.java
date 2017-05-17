@@ -10,11 +10,10 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
-import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.geom.AffineTransform;
-import java.util.Timer;
+
 //Will hold all of my Rock objects
 import java.util.ArrayList;
 
@@ -25,24 +24,28 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 // immport sound libraries
-import javax.sound.sampled.*;
-import java.io.IOException;
-import java.net.*;
-import javax.swing.*;
 
+import javax.swing.*;
 import sounds.SoundLoader;
 
 public class GameBoard extends JFrame {
 
 	// Height and width of the game board
-	
 
 	public static int boardWidth = 1000;
 	public static int boardHeight = 800;
 
 	public static Font font = new Font(null, Font.BOLD, 30);
 	public static int score = 0;
-	public static int lifes = 0;
+	public static int lifes = 3;
+	public static int nrOfRock = 15;
+
+	public enum GameState {
+		Menu, Running, End
+	}
+
+	static GameState state = GameState.Menu;
+
 	// Used to check if a key is being held down
 
 	public static boolean keyHeld = false;
@@ -53,9 +56,13 @@ public class GameBoard extends JFrame {
 
 	public static int keyHeldCode;
 
-	// Holds every PhotonTorpedo I create ---------------
+	// Holds every PhotonTorpedo I create
 
 	public static ArrayList<PhotonTorpedo> torpedos = new ArrayList<PhotonTorpedo>();
+
+	// Holds every Rock I create
+
+	public static ArrayList<Rock> rocks = new ArrayList<Rock>();
 
 	public static void main(String[] args) {
 		new GameBoard();
@@ -63,8 +70,8 @@ public class GameBoard extends JFrame {
 	}
 
 	public GameBoard() {
-		// Define the defaults for the JFrame
 
+		// Define the defaults for the JFrame
 		this.setSize(boardWidth, boardHeight);
 		this.setTitle("Java Asteroids");
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -112,6 +119,20 @@ public class GameBoard extends JFrame {
 					keyHeld = true;
 				}
 
+				else if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+					GameBoard.state = GameBoard.GameState.Running;
+				}
+
+				else if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
+					GameBoard.state = GameBoard.GameState.Menu;
+					GameBoard.rocks.clear();
+
+					GameDrawingPanel2.MakeRocks(GameBoard.nrOfRock);
+
+					GameBoard.lifes = 3;
+					GameBoard.score = 0;
+				}
+
 				// NEW Checks if Enter key is pressed ---------------
 
 				else if (e.getKeyCode() == KeyEvent.VK_ENTER) {
@@ -141,8 +162,6 @@ public class GameBoard extends JFrame {
 		});
 
 		GameDrawingPanel2 gamePanel = new GameDrawingPanel2();
-
-		// Make the drawing area take up the rest of the frame
 
 		this.add(gamePanel, BorderLayout.CENTER);
 
@@ -192,10 +211,6 @@ class RepaintTheBoard2 implements Runnable {
 
 class GameDrawingPanel2 extends JComponent {
 
-	// Holds every Rock I create
-
-	public static ArrayList<Rock> rocks = new ArrayList<Rock>();
-
 	// Get the original x & y points for the polygon
 
 	int[] polyXArray = Rock.sPolyXArray;
@@ -214,7 +229,162 @@ class GameDrawingPanel2 extends JComponent {
 
 	public GameDrawingPanel2() {
 
-		for (int i = 0; i < 15; i++) {
+		MakeRocks(GameBoard.nrOfRock);
+	}
+
+	public void paint(Graphics g) {
+
+		// Allows me to make many settings changes in regards to graphics
+
+		Graphics2D graphicSettings = (Graphics2D) g;
+		AffineTransform identity = new AffineTransform();
+
+		if (GameBoard.state == GameBoard.GameState.Menu) {
+
+			g.setFont(GameBoard.font);
+			g.setColor(Color.BLACK);
+			g.fillRect(0, 0, 1000, 800);
+			g.setColor(Color.WHITE);
+			g.drawString("TAP SPACE TO START", 350, 350);
+
+		}
+
+		else if (GameBoard.state == GameBoard.GameState.Running) {
+
+			// Draw a black background that is as big as the game board
+
+			graphicSettings.setColor(Color.BLACK);
+			graphicSettings.fillRect(0, 0, getWidth(), getHeight());
+
+			// Set rendering rules
+
+			graphicSettings.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+			// Set the drawing color to white
+
+			graphicSettings.setPaint(Color.WHITE);
+
+			// draw score
+			g.setFont(GameBoard.font);
+			g.drawString("SCORE:" + Integer.toString(GameBoard.score), 820, 40);
+			g.drawString("LIFES:" + Integer.toString(GameBoard.lifes), 20, 40);
+
+			// Cycle through all of the Rock objects
+
+			for (Rock rock : GameBoard.rocks) {
+
+				// Move the Rock polygon
+				if (rock.onScreen) {
+					rock.move(theShip, GameBoard.torpedos);
+
+					// Stroke the polygon Rock on the screen
+
+					graphicSettings.draw(rock);
+				}
+
+			}
+			if ((GameBoard.lifes < 1) || (GameBoard.score == GameBoard.nrOfRock - (3 - GameBoard.lifes))) {
+				GameBoard.state = GameBoard.GameState.End;
+			}
+
+			// Handles spinning the ship in the clockwise direction when the D
+			// key is pressed and held
+
+			if (GameBoard.keyHeld == true && GameBoard.keyHeldCode == 68) {
+
+				theShip.increaseRotationAngle();
+
+			} else
+
+			// Continues to rotate the ship counter clockwise if the A key is
+			// held
+
+			if (GameBoard.keyHeld == true && GameBoard.keyHeldCode == 65) {
+
+				theShip.decreaseRotationAngle();
+
+			} else
+
+			if (GameBoard.keyHeld == true && GameBoard.keyHeldCode == 87) {
+
+				theShip.setMovingAngle(theShip.getRotationAngle());
+				theShip.increaseXVelocity(theShip.shipXMoveAngle(theShip.getMovingAngle()) * 0.1);
+				theShip.increaseYVelocity(theShip.shipYMoveAngle(theShip.getMovingAngle()) * 0.1);
+
+			} else
+
+			if (GameBoard.keyHeld == true && GameBoard.keyHeldCode == 83) {
+
+				theShip.setMovingAngle(theShip.getRotationAngle());
+				theShip.decreaseXVelocity(theShip.shipXMoveAngle(theShip.getMovingAngle()) * 0.1);
+				theShip.decreaseYVelocity(theShip.shipYMoveAngle(theShip.getMovingAngle()) * 0.1);
+
+			}
+
+			theShip.move();
+
+			// Sets the origin on the screen so rotation occurs properly
+
+			graphicSettings.setTransform(identity);
+
+			// Moves the ship to the center of the screen
+
+			graphicSettings.translate(theShip.getXCenter(), theShip.getYCenter());
+
+			// Rotates the ship
+
+			graphicSettings.rotate(Math.toRadians(theShip.getRotationAngle()));
+
+			graphicSettings.draw(theShip);
+
+			// NEW Draw torpedos -------------------------
+
+			for (PhotonTorpedo torpedo : GameBoard.torpedos) {
+
+				// Move the Torpedo polygon
+
+				torpedo.move();
+
+				// Make sure the Torpedo is on the screen
+
+				if (torpedo.onScreen) {
+
+					// Stroke the polygon torpedo on the screen
+
+					graphicSettings.setTransform(identity);
+
+					// Changes the torpedos center x & y vectors
+
+					graphicSettings.translate(torpedo.getXCenter(), torpedo.getYCenter());
+
+					graphicSettings.draw(torpedo);
+
+				}
+
+			}
+
+		} else if (GameBoard.state == GameBoard.GameState.End) {
+
+			g.setFont(GameBoard.font);
+			g.setColor(Color.BLACK);
+			g.fillRect(0, 0, 1000, 800);
+			g.setColor(Color.WHITE);
+			if ((GameBoard.lifes < 1)) {
+				g.drawString("YOU LOST", 410, 350);
+				g.drawString("SCORE: "+GameBoard.score, 410, 400);
+				g.drawString("BACSPACE TO RESTART", 310, 450);
+			} else if (GameBoard.score == GameBoard.nrOfRock - (3 - GameBoard.lifes)) {
+				g.drawString("YOU WON", 410, 350);
+				g.drawString("SCORE: " + GameBoard.score, 410, 400);
+				g.drawString("BACSPACE TO RESTART", 310, 450);
+			}
+
+		}
+
+	}
+
+	public static void MakeRocks(int NrOfRock) {
+		for (int i = 0; i < NrOfRock; i++) {
 
 			// Find a random x & y starting point
 			// The -40 part is on there to keep the Rock on the screen
@@ -224,147 +394,10 @@ class GameDrawingPanel2 extends JComponent {
 
 			// Add the Rock object to the ArrayList based on the attributes sent
 
-			rocks.add(new Rock(Rock.getpolyXArray(randomStartXPos), Rock.getpolyYArray(randomStartYPos), 13,
+			GameBoard.rocks.add(new Rock(Rock.getpolyXArray(randomStartXPos), Rock.getpolyYArray(randomStartYPos), 13,
 					randomStartXPos, randomStartYPos));
 
-			Rock.rocks = rocks;
-
+			Rock.rocks = GameBoard.rocks;
 		}
-
 	}
-
-	public void paint(Graphics g) {
-
-		// Allows me to make many settings changes in regards to graphics
-
-		Graphics2D graphicSettings = (Graphics2D) g;
-
-		AffineTransform identity = new AffineTransform();
-
-		// Draw a black background that is as big as the game board
-
-		graphicSettings.setColor(Color.BLACK);
-		graphicSettings.fillRect(0, 0, getWidth(), getHeight());
-
-		// Set rendering rules
-
-		graphicSettings.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-		// Set the drawing color to white
-
-		graphicSettings.setPaint(Color.WHITE);
-
-		// draw score
-		g.setFont(GameBoard.font);
-		g.drawString("SCORE:" + Integer.toString(GameBoard.score), 820, 40);
-		g.drawString("DEATHS:" + Integer.toString(GameBoard.lifes), 20, 40);
-//		if (GameBoard.lifes <= 0) {
-//
-//			g.drawString("YOU LOST", 400, 390);
-//		
-//			
-//			
-//			System.exit(0);
-//		}
-//		
-		
-		// Cycle through all of the Rock objects
-
-		for (Rock rock : rocks) {
-
-			// Move the Rock polygon
-			if (rock.onScreen) {
-				rock.move(theShip, GameBoard.torpedos);
-
-				// Stroke the polygon Rock on the screen
-
-				graphicSettings.draw(rock);
-			}
-
-		}
-
-		// Handles spinning the ship in the clockwise direction when the D key
-		// is pressed and held
-
-		if (GameBoard.keyHeld == true && GameBoard.keyHeldCode == 68) {
-
-			theShip.increaseRotationAngle();
-
-		} else
-
-		// Continues to rotate the ship counter clockwise if the A key is held
-
-		if (GameBoard.keyHeld == true && GameBoard.keyHeldCode == 65) {
-
-			theShip.decreaseRotationAngle();
-
-		} else
-
-		if (GameBoard.keyHeld == true && GameBoard.keyHeldCode == 87) {
-
-			// Set movement angle to the current rotation angle
-			// This is done so that the ship rotation can be set by the A & D
-			// keys
-			// but when the throttle is hit the ship knows what direction to go
-
-			theShip.setMovingAngle(theShip.getRotationAngle());
-
-			theShip.increaseXVelocity(theShip.shipXMoveAngle(theShip.getMovingAngle()) * 0.1);
-			theShip.increaseYVelocity(theShip.shipYMoveAngle(theShip.getMovingAngle()) * 0.1);
-
-		} else
-
-		if (GameBoard.keyHeld == true && GameBoard.keyHeldCode == 83) {
-
-			theShip.setMovingAngle(theShip.getRotationAngle());
-
-			theShip.decreaseXVelocity(theShip.shipXMoveAngle(theShip.getMovingAngle()) * 0.1);
-			theShip.decreaseYVelocity(theShip.shipYMoveAngle(theShip.getMovingAngle()) * 0.1);
-
-		}
-
-		theShip.move();
-
-		// Sets the origin on the screen so rotation occurs properly
-
-		graphicSettings.setTransform(identity);
-
-		// Moves the ship to the center of the screen
-
-		graphicSettings.translate(theShip.getXCenter(), theShip.getYCenter());
-
-		// Rotates the ship
-
-		graphicSettings.rotate(Math.toRadians(theShip.getRotationAngle()));
-
-		graphicSettings.draw(theShip);
-
-		// NEW Draw torpedos -------------------------
-
-		for (PhotonTorpedo torpedo : GameBoard.torpedos) {
-
-			// Move the Torpedo polygon
-
-			torpedo.move();
-
-			// Make sure the Torpedo is on the screen
-
-			if (torpedo.onScreen) {
-
-				// Stroke the polygon torpedo on the screen
-
-				graphicSettings.setTransform(identity);
-
-				// Changes the torpedos center x & y vectors
-
-				graphicSettings.translate(torpedo.getXCenter(), torpedo.getYCenter());
-
-				graphicSettings.draw(torpedo);
-
-			}
-
-		}
-
-	}
-
 }

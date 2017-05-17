@@ -143,9 +143,10 @@ class Rock extends Polygon {
 
 				if (otherRock.intersects(shipBox) ) {
 
-					
+						if(GameBoard.state != GameBoard.GameState.Menu)
+						{
 						// play explosion if ship is hit
-						GameBoard.lifes += 1;
+						GameBoard.lifes -= 1;
 						SoundLoader.playSoundEffect(explodeFile);
 						rock.onScreen = false;
 						theShip.setXCenter(theShip.gBWidth / 2);
@@ -153,7 +154,7 @@ class Rock extends Polygon {
 
 						theShip.setXVelocity(0);
 						theShip.setYVelocity(0);
-					
+						}
 
 				}
 			
