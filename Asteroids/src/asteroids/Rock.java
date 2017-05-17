@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 
+import sounds.ResourceLoader;
+
 // Extending the Polygon class because I'm drawing Polygons
 
 class Rock extends Polygon{
@@ -58,10 +60,10 @@ class Rock extends Polygon{
 	
 	public boolean onScreen = true;
 	
-	// NEW Sound file names
+	// Sound file names
 	// The JavaSound api allows wavs, au, aiff files
 	
-	String explodeFile = "file:./src/explode.wav";
+	String explodeFile = "/explode.wav";
 	
 	// Creates a new asteroid 
 	
@@ -141,7 +143,7 @@ class Rock extends Polygon{
 					
 					// play explosion if ship is hit
 					
-					GameBoard.playSoundEffect(explodeFile);
+					ResourceLoader.playSoundEffect(explodeFile);
 					
 					theShip.setXCenter(theShip.gBWidth/2);
 					theShip.setYCenter(theShip.gBHeight/2);
@@ -169,7 +171,7 @@ class Rock extends Polygon{
 							
 							// NEW play explosion sound if rock is destroyed
 							
-							GameBoard.playSoundEffect(explodeFile);
+							ResourceLoader.playSoundEffect(explodeFile);
 						}
 					
 					}

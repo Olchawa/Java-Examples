@@ -27,6 +27,8 @@ import java.util.concurrent.TimeUnit;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 
+import sounds.ResourceLoader;
+
 // immport sound libraries
 import javax.sound.sampled.*;
 import java.io.IOException;
@@ -44,13 +46,13 @@ public class GameBoard extends JFrame {
 
 	public static boolean keyHeld = false;
 
-	String thrustFile = "file:./src/thrust.au";
-	String laserFile = "file:./src/laser.aiff";
+	String thrustFile = "/thrust.au";
+	String laserFile = "/laser.aiff";
 	// Gets the keycode for the key being held down
 
 	public static int keyHeldCode;
 
-	// NEW Holds every PhotonTorpedo I create ---------------
+	//  Holds every PhotonTorpedo I create ---------------
 
 	public static ArrayList<PhotonTorpedo> torpedos = new ArrayList<PhotonTorpedo>();
 
@@ -113,7 +115,7 @@ public class GameBoard extends JFrame {
 
 				else if (e.getKeyCode() == KeyEvent.VK_ENTER) {
 
-					playSoundEffect(laserFile);
+					ResourceLoader.playSoundEffect(laserFile);
 
 					// Creates a new torpedo and passes the ships nose position
 					// so the torpedo can start there. Also passes the ships
@@ -160,41 +162,7 @@ public class GameBoard extends JFrame {
 
 	// How to play sounds in a JFrame
 
-	public static void playSoundEffect(String soundToPlay) {
-
-		// Pointer towards the resource to play
-		URL soundLocation;
-
-		try {
-
-			soundLocation = new URL(soundToPlay);
-			// Stores a predefined audio clip
-			Clip clip = null;
-			// Convert audio data to different playable formats
-			clip = AudioSystem.getClip();
-			// Holds a stream of a definite length
-			AudioInputStream inputStream;
-			inputStream = AudioSystem.getAudioInputStream(soundLocation);
-			// Make audio clip available for play
-			clip.open(inputStream);
-			// Define how many times to loop
-			clip.loop(0);
-			// Play the clip
-			clip.start();
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		} catch (LineUnavailableException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (UnsupportedAudioFileException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-	}
+	
 
 }
 
