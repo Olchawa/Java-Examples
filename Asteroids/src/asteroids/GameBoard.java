@@ -120,8 +120,13 @@ public class GameBoard extends JFrame {
 				}
 
 				else if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-					GameBoard.state = GameBoard.GameState.Running;
+					
+					if(GameBoard.state != GameBoard.GameState.End){
+						GameBoard.state = GameBoard.GameState.Running;
+					}
+					
 				}
+				
 
 				else if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
 					GameBoard.state = GameBoard.GameState.Menu;
@@ -370,12 +375,12 @@ class GameDrawingPanel2 extends JComponent {
 			g.fillRect(0, 0, 1000, 800);
 			g.setColor(Color.WHITE);
 			if ((GameBoard.lifes < 1)) {
-				g.drawString("YOU LOST", 410, 350);
-				g.drawString("SCORE: "+GameBoard.score, 410, 400);
+				g.drawString("YOU LOST", 409, 350);
+				g.drawString("SCORE: "+GameBoard.score, 415, 400);
 				g.drawString("BACSPACE TO RESTART", 310, 450);
 			} else if (GameBoard.score == GameBoard.nrOfRock - (3 - GameBoard.lifes)) {
-				g.drawString("YOU WON", 410, 350);
-				g.drawString("SCORE: " + GameBoard.score, 410, 400);
+				g.drawString("YOU WON", 420, 350);
+				g.drawString("SCORE: " + GameBoard.score, 415, 400);
 				g.drawString("BACSPACE TO RESTART", 310, 450);
 			}
 
