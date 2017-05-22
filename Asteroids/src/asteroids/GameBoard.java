@@ -141,9 +141,9 @@ public class GameBoard extends JFrame {
 				// NEW Checks if Enter key is pressed ---------------
 
 				else if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-
+					if(GameBoard.state == GameBoard.GameState.Running){
 					SoundLoader.playSoundEffect(laserFile);
-
+					}
 					// Creates a new torpedo and passes the ships nose position
 					// so the torpedo can start there. Also passes the ships
 					// rotation angle so the torpedo goes in the right direction
