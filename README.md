@@ -1,2 +1,2 @@
 # JavaExamples
-My programs 
+Welcome to my repository
