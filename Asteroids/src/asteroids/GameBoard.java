@@ -43,7 +43,7 @@ public class GameBoard extends JFrame {
 	public enum GameState {
 		Menu, Running, End
 	}
-
+	//gfg
 	static GameState state = GameState.Menu;
 
 	// Used to check if a key is being held down
